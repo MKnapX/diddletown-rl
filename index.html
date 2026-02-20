@@ -549,7 +549,7 @@ function buildLeaderboard() {
     if (cs > 1) {
       streakHtml = `<div class="p-streak hot">🔥 Common ${cs} sessions running</div>`;
     } else if (ls > 1) {
-      streakHtml = `<div class="p-streak">Best common streak: ${ls} sessions</div>`;
+      streakHtml = `<div class="p-streak">Longest common streak: ${ls} sessions</div>`;
     }
 
     // Streak badge in its own column
@@ -577,7 +577,7 @@ function buildLeaderboard() {
           ${s.common>0?`<span class="common-badge">😔 ${s.common}x</span>`:`<span style="color:var(--muted);font-size:13px;font-family:'Barlow Condensed'">—</span>`}
           <div class="stat-lbl">Common</div>
         </div>
-        <div class="stat-box"><div class="stat-val" style="color:${ls>1?'#fb923c':'var(--muted)'}">${ls||'—'}</div><div class="stat-lbl">Best Streak</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:${ls>1?'#fb923c':'var(--muted)'}">${ls||'—'}</div><div class="stat-lbl">Longest Streak</div></div>
       </div>`;
   });
 }
