@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DiddleTown RL · Game Tracker</title>
+<title>DiddleTown RL · 2v2 Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -27,7 +27,9 @@
   /* LOGIN */
   #login-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s;}
   #login-overlay.open{opacity:1;pointer-events:all;}
-  .login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;width:100%;max-width:380px;text-align:center;}
+  .login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;width:100%;max-width:380px;text-align:center;position:relative;}
+  .login-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;transition:color .2s;}
+  .login-close:hover{color:var(--text);}
   .login-box h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;color:var(--accent);margin-bottom:6px;}
   .login-box p{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:28px;}
   .login-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;text-align:left;}
@@ -40,7 +42,7 @@
 
   /* HEADER */
   header{padding:48px 0 24px;text-align:center;}
-  .logo-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+  .logo-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
   h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,12vw,120px);line-height:.9;letter-spacing:2px;background:linear-gradient(135deg,#fff 30%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
   .subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:8px;}
 
@@ -193,6 +195,7 @@
 
 <div id="login-overlay">
   <div class="login-box">
+    <button class="login-close" onclick="document.getElementById('login-overlay').classList.remove('open')">✕</button>
     <h2>🔐 Login</h2>
     <p>Sign in to add or delete data</p>
     <div class="login-field"><label>Username</label><input type="text" id="login-user" placeholder="username" autocomplete="username"></div>
@@ -247,15 +250,42 @@
         <div class="duel-label">BO3 Wins</div>
       </div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
-      <div style="font-family:'Barlow Condensed';font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;text-align:center">Win Split</div>
-      <div class="split-bar">
-        <div id="dbar-l" style="background:var(--accent);width:50%;transition:width 1s cubic-bezier(.22,1,.36,1)"></div>
-        <div id="dbar-r" style="background:#a855f7;width:50%;transition:width 1s cubic-bezier(.22,1,.36,1)"></div>
+    <!-- Individual games won row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+        <div style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Individual Games Won</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;">
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:42px;line-height:1;color:var(--accent)" id="d-games-l">—</div>
+            <div style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Lishein</div>
+          </div>
+          <div style="font-family:'Bebas Neue';font-size:22px;color:var(--muted)">:</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:42px;line-height:1;color:#a855f7" id="d-games-r">—</div>
+            <div style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Will</div>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-top:6px;">
-        <span id="dbar-l-pct" style="font-family:'Barlow Condensed';font-size:12px;color:var(--accent)">—</span>
-        <span id="dbar-r-pct" style="font-family:'Barlow Condensed';font-size:12px;color:#a855f7">—</span>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;text-align:center">Win Split (BO3s)</div>
+        <div class="split-bar">
+          <div id="dbar-l" style="background:var(--accent);width:50%;transition:width 1s cubic-bezier(.22,1,.36,1)"></div>
+          <div id="dbar-r" style="background:#a855f7;width:50%;transition:width 1s cubic-bezier(.22,1,.36,1)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span id="dbar-l-pct" style="font-family:'Barlow Condensed';font-size:12px;color:var(--accent)">—</span>
+          <span id="dbar-r-pct" style="font-family:'Barlow Condensed';font-size:12px;color:#a855f7">—</span>
+        </div>
+        <div style="height:1px;background:var(--border);margin:14px 0;"></div>
+        <div style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;text-align:center">Win Split (Games)</div>
+        <div class="split-bar">
+          <div id="dbar-gl" style="background:var(--accent);width:50%;transition:width 1s cubic-bezier(.22,1,.36,1)"></div>
+          <div id="dbar-gr" style="background:#a855f7;width:50%;transition:width 1s cubic-bezier(.22,1,.36,1)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span id="dbar-gl-pct" style="font-family:'Barlow Condensed';font-size:12px;color:var(--accent)">—</span>
+          <span id="dbar-gr-pct" style="font-family:'Barlow Condensed';font-size:12px;color:#a855f7">—</span>
+        </div>
       </div>
     </div>
     <div id="duel-games"></div>
@@ -283,7 +313,7 @@
       </div>
       <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:4px">
         <span style="font-family:'Barlow Condensed';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">T1</span>
-        <div class="score-inputs"><input type="number" id="s-b1-s1" min="0" max="3" value="2"><span>—</span><input type="number" id="s-b1-s2" min="0" max="3" value="1"></div>
+        <div class="score-inputs"><input type="number" id="s-b1-s1" min="0" max="2" value="2"><span>—</span><input type="number" id="s-b1-s2" min="0" max="2" value="1"></div>
         <span style="font-family:'Barlow Condensed';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">T2</span>
       </div>
     </div>
@@ -297,7 +327,7 @@
       </div>
       <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:4px">
         <span style="font-family:'Barlow Condensed';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">T1</span>
-        <div class="score-inputs"><input type="number" id="s-b2-s1" min="0" max="3" value="2"><span>—</span><input type="number" id="s-b2-s2" min="0" max="3" value="1"></div>
+        <div class="score-inputs"><input type="number" id="s-b2-s1" min="0" max="2" value="2"><span>—</span><input type="number" id="s-b2-s2" min="0" max="2" value="1"></div>
         <span style="font-family:'Barlow Condensed';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">T2</span>
       </div>
     </div>
@@ -322,7 +352,7 @@
       <div class="form-section-title">Match Score</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-top:8px">
         <span style="font-family:'Bebas Neue';font-size:28px;color:var(--accent)">Lishein</span>
-        <div class="score-inputs"><input type="number" id="d-l-score" min="0" max="3" value="2"><span>—</span><input type="number" id="d-w-score" min="0" max="3" value="1"></div>
+        <div class="score-inputs"><input type="number" id="d-l-score" min="0" max="2" value="2"><span>—</span><input type="number" id="d-w-score" min="0" max="2" value="1"></div>
         <span style="font-family:'Bebas Neue';font-size:28px;color:#a855f7">Will</span>
       </div>
     </div>
@@ -372,6 +402,12 @@ window.openLoginModal = () => {
   document.getElementById('login-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('login-user').focus(),100);
 };
+// Close login when clicking backdrop
+document.getElementById('login-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('login-overlay')) {
+    document.getElementById('login-overlay').classList.remove('open');
+  }
+});
 window.attemptLogin = () => {
   const u=document.getElementById('login-user').value.trim();
   const p=document.getElementById('login-pass').value;
@@ -549,7 +585,7 @@ function buildLeaderboard() {
     if (cs > 1) {
       streakHtml = `<div class="p-streak hot">🔥 Common ${cs} sessions running</div>`;
     } else if (ls > 1) {
-      streakHtml = `<div class="p-streak">Longest common streak: ${ls} sessions</div>`;
+      streakHtml = `<div class="p-streak">Best common streak: ${ls} sessions</div>`;
     }
 
     // Streak badge in its own column
@@ -577,7 +613,7 @@ function buildLeaderboard() {
           ${s.common>0?`<span class="common-badge">😔 ${s.common}x</span>`:`<span style="color:var(--muted);font-size:13px;font-family:'Barlow Condensed'">—</span>`}
           <div class="stat-lbl">Common</div>
         </div>
-        <div class="stat-box"><div class="stat-val" style="color:${ls>1?'#fb923c':'var(--muted)'}">${ls||'—'}</div><div class="stat-lbl">Longest Streak</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:${ls>1?'#fb923c':'var(--muted)'}">${ls||'—'}</div><div class="stat-lbl">Best Streak</div></div>
       </div>`;
   });
 }
@@ -631,15 +667,26 @@ function buildSessions() {
 
 // ── Duels ─────────────────────────────────────────────────────────────────────
 function buildDuels(){
-  let lw=0,ww=0;
-  duels.forEach(d=>{if(+d.l>+d.w)lw++;else ww++;});
+  let lw=0, ww=0, lg=0, wg=0;
+  duels.forEach(d=>{
+    if(+d.l>+d.w) lw++; else ww++;
+    lg += +d.l;
+    wg += +d.w;
+  });
   const tot=lw+ww||1;
+  const gtot=lg+wg||1;
   document.getElementById('d-wins-l').textContent=lw;
   document.getElementById('d-wins-r').textContent=ww;
+  document.getElementById('d-games-l').textContent=lg;
+  document.getElementById('d-games-r').textContent=wg;
   document.getElementById('dbar-l').style.width=(lw/tot*100).toFixed(1)+'%';
   document.getElementById('dbar-r').style.width=(ww/tot*100).toFixed(1)+'%';
   document.getElementById('dbar-l-pct').textContent=(lw/tot*100).toFixed(1)+'%';
   document.getElementById('dbar-r-pct').textContent=(ww/tot*100).toFixed(1)+'%';
+  document.getElementById('dbar-gl').style.width=(lg/gtot*100).toFixed(1)+'%';
+  document.getElementById('dbar-gr').style.width=(wg/gtot*100).toFixed(1)+'%';
+  document.getElementById('dbar-gl-pct').textContent=(lg/gtot*100).toFixed(1)+'%';
+  document.getElementById('dbar-gr-pct').textContent=(wg/gtot*100).toFixed(1)+'%';
   const ctr=document.getElementById('duel-games');
   ctr.innerHTML='';
   if(!duels.length){ctr.innerHTML='<div class="empty-state">No 1v1 results yet!</div>';return;}
